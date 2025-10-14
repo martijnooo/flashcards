@@ -1,0 +1,68 @@
+.main-header {
+    font-size: 3rem;
+    color: #1f77b4;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+.sub-header {
+    font-size: 1.5rem;
+    color: #2e86ab;
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+}
+
+/* Flashcard container */
+.flashcard-container {
+    background: linear-gradient(135deg, #5a69a8 0%, #332a80 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid transparent;
+    height: fit-content;
+}
+
+/* Duplicate label */
+.duplicate-label {
+    background-color: #ffc107;
+    color: #856404;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ffc107;
+}
+
+.stButton button {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.stButton button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stButton button:disabled {
+    background: #6c757d;
+    color: #dee2e6;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Expander styling */
+.streamlit-expanderHeader {
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
