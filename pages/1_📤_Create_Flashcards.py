@@ -2,6 +2,7 @@ import streamlit as st
 from utils.text_utils import split_text, safe_parse_json, read_word
 from utils.llm_utils import create_llm, generate_flashcards
 from utils.pinecone_utils import initialize_pinecone, upsert_flashcards
+from concurrent.futures import ThreadPoolExecutor
 
 # Load CSS from file
 def load_css(file_path):
@@ -103,11 +104,18 @@ if st.session_state.show_generator:
             with st.spinner("🤖 Generating flashcards from your document..."):
                 chunks = split_text(text)
                 llm = create_llm()
-                flashcards = []
-                for chunk in chunks:
-                    raw_output = generate_flashcards(llm, chunk)
-                    flashcards += safe_parse_json(raw_output)
-                
+
+                def run_chunk(text_chunk):
+                    raw_output = generate_flashcards(llm, text_chunk)
+                    return safe_parse_json(raw_output)
+
+                # run all chunks in parallel
+                with ThreadPoolExecutor() as executor:
+                    flashcards_per_chunk = list(executor.map(run_chunk, chunks))
+
+                # flatten the list of lists
+                flashcards = [fc for chunk in flashcards_per_chunk for fc in chunk]
+
                 # Store in session state
                 st.session_state.current_flashcards = flashcards
                 st.session_state.flashcards_generated = True
