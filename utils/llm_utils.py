@@ -1,8 +1,12 @@
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
+from utils.env_loader import load_env, get_env_var
+import streamlit as st
 
-def create_llm(api_key: str):
-    return ChatOpenAI(model="gpt-4o-mini", api_key=api_key, temperature=0)
+@st.cache_resource
+def create_llm():
+    load_env()
+    return ChatOpenAI(model="gpt-4o-mini", api_key=get_env_var("OPENAI_API_KEY"), temperature=0)
 
 def generate_flashcards(llm, text_chunk: str):
     prompt = ChatPromptTemplate.from_template("""

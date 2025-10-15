@@ -4,6 +4,8 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from tqdm.auto import tqdm
 import hashlib
+from utils.env_loader import load_env, get_env_var
+import streamlit as st
 
 def init_pinecone(api_key: str):
     pc = Pinecone(api_key=api_key)
@@ -34,3 +36,22 @@ def upsert_flashcards(index, embedder, flashcards):
 
 def create_vectorstore(embedder, index):
     return PineconeVectorStore(embedding=embedder, index=index, text_key="question")
+
+# Cache the Pinecone initialization
+@st.cache_resource
+def initialize_pinecone():
+    # Load environment variables
+    load_env()
+    OPENAI_API_KEY = get_env_var("OPENAI_API_KEY")
+    PINECONE_API_KEY = get_env_var("PINECONE_API_KEY")
+    
+    # Initialize Pinecone components
+    pc = init_pinecone(PINECONE_API_KEY)
+    index = ensure_index(pc)
+    embedder = create_embeddings(OPENAI_API_KEY)
+    vectorstore = create_vectorstore(embedder, index)
+    retriever = vectorstore.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={'k': 6, 'score_threshold': 0.87}
+    )
+    return index, embedder, retriever, vectorstore
