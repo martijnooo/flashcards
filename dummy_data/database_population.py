@@ -42,7 +42,7 @@ class DummyFlashcardGenerator:
     def setup_components(self) -> None:
         """Initialize LLM, Pinecone, and embeddings."""
         try:
-            self.llm = create_llm(self.openai_api_key)
+            self.llm = create_llm()
             self.pc = init_pinecone(self.pinecone_api_key)
             self.index = ensure_index(self.pc)
             self.embedder = create_embeddings(self.openai_api_key)
@@ -169,7 +169,10 @@ def main():
         urls = [
             "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks",
             "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-recurrent-neural-networks",
-            "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-deep-learning-tips-and-tricks"
+            "https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-deep-learning-tips-and-tricks",
+            "https://cheatography.com/thesoupnazi/cheat-sheets/genetics/",
+            "https://cheatography.com/thesoupnazi/cheat-sheets/mitosis/"
+
         ]
         
         # Generate flashcards
