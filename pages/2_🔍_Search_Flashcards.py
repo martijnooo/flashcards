@@ -33,7 +33,7 @@ _, _, retriever, vectorstore = initialize_pinecone()
 # Header
 st.markdown('<h1 class="main-header">🔍 Flashcard Search</h1>', unsafe_allow_html=True)
 
-query = st.text_input("What would you like to learn about?")
+query = st.text_input("What would you like to learn about?", placeholder="E.g. What are convolutional neural networks")
 
 if query:
     with st.spinner("🤖 Retrieving flashcards from database..."):
