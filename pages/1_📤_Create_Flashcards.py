@@ -97,36 +97,37 @@ if st.session_state.show_generator:
                         use_container_width=True,
                         help="Click to generate flashcards from the uploaded document"
                     )
+                if generate:
+                    with st.spinner("🤖 AI generating flashcards from your document..."):
+                        chunks = split_text(text)
+                        llm = create_llm()
+
+                        def run_chunk(text_chunk):
+                            raw_output = generate_flashcards(llm, text_chunk)
+                            return safe_parse_json(raw_output)
+
+                        # run all chunks in parallel
+                        with ThreadPoolExecutor() as executor:
+                            flashcards_per_chunk = list(executor.map(run_chunk, chunks))
+
+                        # flatten the list of lists
+                        flashcards = [fc for chunk in flashcards_per_chunk for fc in chunk]
+
+                        # Store in session state
+                        st.session_state.current_flashcards = flashcards
+                        st.session_state.flashcards_generated = True
+                        # Reset the tracking dictionaries when new flashcards are generated
+                        st.session_state.added_to_db = {i: False for i in range(len(flashcards))}
+                        st.session_state.similar_cards = {}
+                        
+                        st.toast(f"✅ AI generated {len(flashcards)} flashcards!", duration="infinite")
+                        # Auto-collapse the generator after successful generation
+                        st.session_state.show_generator = False
+                        st.rerun()
             else:
                 st.info("📝 Please upload a Word document to generate flashcards")
 
-        if uploaded_file and generate:
-            with st.spinner("🤖 Generating flashcards from your document..."):
-                chunks = split_text(text)
-                llm = create_llm()
-
-                def run_chunk(text_chunk):
-                    raw_output = generate_flashcards(llm, text_chunk)
-                    return safe_parse_json(raw_output)
-
-                # run all chunks in parallel
-                with ThreadPoolExecutor() as executor:
-                    flashcards_per_chunk = list(executor.map(run_chunk, chunks))
-
-                # flatten the list of lists
-                flashcards = [fc for chunk in flashcards_per_chunk for fc in chunk]
-
-                # Store in session state
-                st.session_state.current_flashcards = flashcards
-                st.session_state.flashcards_generated = True
-                # Reset the tracking dictionaries when new flashcards are generated
-                st.session_state.added_to_db = {i: False for i in range(len(flashcards))}
-                st.session_state.similar_cards = {}
-                
-                st.toast(f"✅ Successfully generated {len(flashcards)} flashcards!")
-                # Auto-collapse the generator after successful generation
-                st.session_state.show_generator = False
-                st.rerun()
+       
 
 # Display flashcards from session state - FULL WIDTH
 if st.session_state.flashcards_generated:
@@ -221,6 +222,7 @@ if st.session_state.flashcards_generated:
                         with col_right:
                             if is_duplicate:
                                 st.markdown('<div class="duplicate-label">⚠️ Possible Duplicate</div>', unsafe_allow_html=True)
+
 
 # Show message when no flashcards generated
 elif not st.session_state.show_generator:
