@@ -52,6 +52,6 @@ def initialize_pinecone():
     vectorstore = create_vectorstore(embedder, index)
     retriever = vectorstore.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={'k': 6, 'score_threshold': 0.87}
+        search_kwargs={'k': 6, 'score_threshold': 0.9}
     )
     return index, embedder, retriever, vectorstore
