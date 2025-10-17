@@ -9,7 +9,15 @@ from utils.pinecone_utils import initialize_pinecone
 # Initialize Pinecone
 index = initialize_pinecone()
 
-st.title("Flashcard Categories Analysis")
+# Load CSS from file
+def load_css(file_path):
+    with open(file_path, 'r') as f:
+        return f.read()
+# Load and apply CSS
+css = load_css('styles.css')
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+
+st.markdown('<h1 class="main-header">🧠 Flashcard Category Analysis</h1>',  unsafe_allow_html=True)
 
 try:
     # Retrieve all flashcards
@@ -78,94 +86,95 @@ try:
                 "Percentage": f"{(count/total_cards)*100:.1f}%"
             })
         
-        st.dataframe(category_data, use_container_width=True)
+        st.dataframe(category_data)
+
+        with st.expander(label="Show Cluster Analysis"):
+            # Display as bar chart
+            st.subheader("Categories Distribution")
+            chart_data = {
+                "Category": [cat for cat, count in sorted_categories],
+                "Count": [count for cat, count in sorted_categories]
+            }
+            st.bar_chart(chart_data, x="Category", y="Count")
         
-        # Display as bar chart
-        st.subheader("Categories Distribution")
-        chart_data = {
-            "Category": [cat for cat, count in sorted_categories],
-            "Count": [count for cat, count in sorted_categories]
-        }
-        st.bar_chart(chart_data, x="Category", y="Count")
-    
-    # K-means Clustering Section
-    st.header("🎯 K-means Clustering Analysis")
-    
-    if len(vectors) > 0:
-        # Sidebar controls for clustering
-        st.sidebar.header("Clustering Settings")
-        
-        max_k = st.sidebar.slider(
-            "Maximum number of clusters to test", 
-            min_value=3, 
-            max_value=min(15, len(vectors)), 
-            value=8,
-            help="Higher values will test more cluster possibilities"
-        )
-        
-        auto_detect = st.sidebar.checkbox("Auto-detect optimal clusters", value=True)
-        
-        if not auto_detect:
-            manual_k = st.sidebar.slider(
-                "Manual cluster selection", 
-                min_value=2, 
-                max_value=min(10, len(vectors)), 
-                value=4
-            )
-        
-        # Elbow Method Analysis
-        st.subheader("Elbow Method Analysis")
-        
-        with st.spinner("Calculating optimal clusters..."):
-            # Calculate inertias for different k values
-            inertias = []
-            k_range = range(1, max_k + 1)
+            # K-means Clustering Section
+            st.header("🎯 K-means Clustering Analysis")
             
-            for k in k_range:
-                kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-                kmeans.fit(vectors)
-                inertias.append(kmeans.inertia_)
+            if len(vectors) > 0:
+                # Sidebar controls for clustering
+                st.sidebar.header("Clustering Settings")
+                
+                max_k = st.sidebar.slider(
+                    "Maximum number of clusters to test", 
+                    min_value=3, 
+                    max_value=min(15, len(vectors)), 
+                    value=8,
+                    help="Higher values will test more cluster possibilities"
+                )
+                
+                auto_detect = st.sidebar.checkbox("Auto-detect optimal clusters", value=True)
+                
+                if not auto_detect:
+                    manual_k = st.sidebar.slider(
+                        "Manual cluster selection", 
+                        min_value=2, 
+                        max_value=min(10, len(vectors)), 
+                        value=4
+                    )
+                
+                # Elbow Method Analysis
+                st.subheader("Elbow Method Analysis")
+                
+                with st.spinner("Calculating optimal clusters..."):
+                    # Calculate inertias for different k values
+                    inertias = []
+                    k_range = range(1, max_k + 1)
+                    
+                    for k in k_range:
+                        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+                        kmeans.fit(vectors)
+                        inertias.append(kmeans.inertia_)
+                    
+                    # Plot elbow method
+                    fig1, ax1 = plt.subplots(figsize=(10, 6))
+                    ax1.plot(k_range, inertias, 'bo-', linewidth=2, markersize=8)
+                    ax1.set_xlabel('Number of Clusters (k)')
+                    ax1.set_ylabel('Inertia (Within-cluster sum of squares)')
+                    ax1.set_title('Elbow Method for Optimal k')
+                    ax1.grid(True, alpha=0.3)
+                    st.pyplot(fig1)
+                
+                # Silhouette Analysis
+                st.subheader("Silhouette Analysis")
+                
+                with st.spinner("Calculating silhouette scores..."):
+                    silhouette_scores = []
+                    k_range_silhouette = range(2, max_k + 1)
+                    
+                    for k in k_range_silhouette:
+                        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+                        cluster_labels = kmeans.fit_predict(vectors)
+                        silhouette_avg = silhouette_score(vectors, cluster_labels)
+                        silhouette_scores.append(silhouette_avg)
+                    
+                    # Plot silhouette scores
+                    fig2, ax2 = plt.subplots(figsize=(10, 6))
+                    ax2.plot(k_range_silhouette, silhouette_scores, 'ro-', linewidth=2, markersize=8)
+                    ax2.set_xlabel('Number of Clusters (k)')
+                    ax2.set_ylabel('Silhouette Score')
+                    ax2.set_title('Silhouette Analysis for Optimal k')
+                    ax2.grid(True, alpha=0.3)
+                    st.pyplot(fig2)
+                
+            # Determine optimal k
+            if auto_detect:
+                # Find optimal k from silhouette scores (higher is better)
+                optimal_k = k_range_silhouette[np.argmax(silhouette_scores)]
+                st.success(f"🎯 Auto-detected optimal number of clusters: **{optimal_k}**")
+            else:
+                optimal_k = manual_k
+                st.info(f"🔧 Using manually selected clusters: **{optimal_k}**")
             
-            # Plot elbow method
-            fig1, ax1 = plt.subplots(figsize=(10, 6))
-            ax1.plot(k_range, inertias, 'bo-', linewidth=2, markersize=8)
-            ax1.set_xlabel('Number of Clusters (k)')
-            ax1.set_ylabel('Inertia (Within-cluster sum of squares)')
-            ax1.set_title('Elbow Method for Optimal k')
-            ax1.grid(True, alpha=0.3)
-            st.pyplot(fig1)
-        
-        # Silhouette Analysis
-        st.subheader("Silhouette Analysis")
-        
-        with st.spinner("Calculating silhouette scores..."):
-            silhouette_scores = []
-            k_range_silhouette = range(2, max_k + 1)
-            
-            for k in k_range_silhouette:
-                kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-                cluster_labels = kmeans.fit_predict(vectors)
-                silhouette_avg = silhouette_score(vectors, cluster_labels)
-                silhouette_scores.append(silhouette_avg)
-            
-            # Plot silhouette scores
-            fig2, ax2 = plt.subplots(figsize=(10, 6))
-            ax2.plot(k_range_silhouette, silhouette_scores, 'ro-', linewidth=2, markersize=8)
-            ax2.set_xlabel('Number of Clusters (k)')
-            ax2.set_ylabel('Silhouette Score')
-            ax2.set_title('Silhouette Analysis for Optimal k')
-            ax2.grid(True, alpha=0.3)
-            st.pyplot(fig2)
-        
-        # Determine optimal k
-        if auto_detect:
-            # Find optimal k from silhouette scores (higher is better)
-            optimal_k = k_range_silhouette[np.argmax(silhouette_scores)]
-            st.success(f"🎯 Auto-detected optimal number of clusters: **{optimal_k}**")
-        else:
-            optimal_k = manual_k
-            st.info(f"🔧 Using manually selected clusters: **{optimal_k}**")
-        
         # Apply K-means clustering
         st.subheader("Clustering Results")
         

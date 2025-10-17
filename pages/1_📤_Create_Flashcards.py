@@ -139,15 +139,15 @@ if st.session_state.flashcards_generated:
     added_cards = sum(st.session_state.added_to_db.values())
     duplicate_cards = sum(1 for i in st.session_state.similar_cards if st.session_state.similar_cards[i] is not None)
     
-    stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+    stat_col1, stat_col2 = st.columns(2)
     with stat_col1:
         st.metric("Total Cards", total_cards)
     with stat_col2:
         st.metric("Added to DB", added_cards)
-    with stat_col3:
-        st.metric("Potential Duplicates", duplicate_cards)
-    with stat_col4:
-        st.metric("Remaining", total_cards - added_cards)
+    # with stat_col3:
+    #     st.metric("Potential Duplicates", duplicate_cards)
+    # with stat_col4:
+    #     st.metric("Remaining", total_cards - added_cards)
     
     # Initialize Pinecone components
     index, embedder, _, vectorstore = initialize_pinecone()

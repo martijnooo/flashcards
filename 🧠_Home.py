@@ -32,102 +32,147 @@ def main():
     st.markdown('<h1 class="main-header">🧠 Flashcard Genius</h1>', unsafe_allow_html=True)
     st.markdown('<p class="tagline">AI-Powered Learning • Smart Flashcards • Instant Knowledge</p>', unsafe_allow_html=True)
     
-    # Quick Stats Bar (if DB connected)
-    if db_connected:
-        try:
-            # Get some quick stats for demo impact
-            sample_results = retriever.invoke("learning", limit=5)
-            stats_col1, stats_col2, stats_col3, stats_col4 = st.columns(4)
-            with stats_col1:
-                st.markdown('<div class="stats-card"><h3>🚀</h3><p>AI-Powered</p></div>', unsafe_allow_html=True)
-            with stats_col2:
-                st.markdown('<div class="stats-card"><h3>⚡</h3><p>Instant Generation</p></div>', unsafe_allow_html=True)
-            with stats_col3:
-                st.markdown('<div class="stats-card"><h3>🔍</h3><p>Smart Search</p></div>', unsafe_allow_html=True)
-            with stats_col4:
-                st.markdown('<div class="stats-card"><h3>📊</h3><p>Analytics</p></div>', unsafe_allow_html=True)
-        except:
-            pass
+    # Hero Section - Added content between header and problem/solution
+    st.markdown("""
+    <div style='text-align: center; padding: 0.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; color: white;'>
+        <h3 style='color: white; margin-bottom: 0rem;'>Transform How You Learn</h3>
+        <p style='font-size: 1rem; opacity: 0.9;'>
+        Upload any document and instantly get AI-generated flashcards. No more manual work, no more forgetting what you learn.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    # Problem & Solution Section
-    col_prob, col_sol = st.columns(2)
+    # Visual Problem/Solution Comparison - Horizontal Layout
+    st.markdown("## 🔄 Learning Transformed")
     
-    with col_prob:
+    # Problem Cards (Traditional Learning)
+    st.markdown("#### 📝 Traditional Learning")
+    prob_col1, prob_col2, prob_col3, prob_col4 = st.columns(4)
+    
+    with prob_col1:
         st.markdown("""
-        <div style='padding: 2rem;'>
-            <h2>🎯 The Problem</h2>
-            <p style='font-size: 1.2rem; color: #6c757d;'>
-            <strong>"I read it, but I can't remember it..."</strong><br><br>
-            Traditional learning methods struggle with:
-            </p>
-            <ul style='font-size: 1.1rem; color: #6c757d;'>
-            <li>📝 Manual flashcard creation is time-consuming</li>
-            <li>🔄 No system to prevent duplicate cards</li>
-            <li>📚 Disorganized knowledge across multiple sources</li>
-            <li>⏰ Inefficient review processes</li>
-            </ul>
+        <div class="stats-card" style="border-top: 4px solid #ff6b6b;">
+            <h3>⏰</h3>
+            <p>Hours Wasted</p>
+            <small>Manual card creation</small>
         </div>
         """, unsafe_allow_html=True)
     
-    with col_sol:
+    with prob_col2:
         st.markdown("""
-        <div style='padding: 2rem;'>
-            <h2>💡 The Solution</h2>
-            <p style='font-size: 1.2rem; color: #6c757d;'>
-            <strong>Flashcard Genius transforms how you learn:</strong>
-            </p>
-            <ul style='font-size: 1.1rem; color: #6c757d;'>
-            <li>🤖 AI automatically generates cards from your documents</li>
-            <li>🔍 Smart duplicate detection prevents redundancy</li>
-            <li>📊 Analytics reveal your learning patterns</li>
-            <li>⚡ Instant search across all your knowledge</li>
-            </ul>
+        <div class="stats-card" style="border-top: 4px solid #ff6b6b;">
+            <h3>🔄</h3>
+            <p>Duplicate Cards</p>
+            <small>No organization</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with prob_col3:
+        st.markdown("""
+        <div class="stats-card" style="border-top: 4px solid #ff6b6b;">
+            <h3>📚</h3>
+            <p>Disorganized</p>
+            <small>Scattered knowledge</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with prob_col4:
+        st.markdown("""
+        <div class="stats-card" style="border-top: 4px solid #ff6b6b;">
+            <h3>🔍</h3>
+            <p>Hard to Search</p>
+            <small>No smart search</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Arrow transition
+    st.markdown("<div style='text-align: center; font-size: 2rem; color: #667eea; margin: 0rem 0;'>↓</div>", unsafe_allow_html=True)
+    
+    # Solution Cards (Flashcard Genius)
+    st.markdown("#### 🚀 Flashcard Genius")
+    sol_col1, sol_col2, sol_col3, sol_col4 = st.columns(4)
+    
+    with sol_col1:
+        st.markdown("""
+        <div class="stats-card" style="border-top: 4px solid #667eea;">
+            <h3>⚡</h3>
+            <p>Instant Generation</p>
+            <small>AI creates cards in seconds</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with sol_col2:
+        st.markdown("""
+        <div class="stats-card" style="border-top: 4px solid #667eea;">
+            <h3>🔍</h3>
+            <p>Smart Detection</p>
+            <small>Prevents duplicates automatically</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with sol_col3:
+        st.markdown("""
+        <div class="stats-card" style="border-top: 4px solid #667eea;">
+            <h3>📊</h3>
+            <p>Organized Knowledge</p>
+            <small>AI categorizes everything</small>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with sol_col4:
+        st.markdown("""
+        <div class="stats-card" style="border-top: 4px solid #667eea;">
+            <h3>🎯</h3>
+            <p>Semantic Search</p>
+            <small>Find anything instantly</small>
         </div>
         """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    # Live Demo Preview Section
-    st.markdown("## 🎥 See It In Action")
+    # How It Works - Simple 3-Step Process
+    st.markdown("## 🎥 How It Works")
     
-    demo_col1, demo_col2, demo_col3 = st.columns(3)
+    step_col1, step_col2, step_col3 = st.columns(3)
     
-    with demo_col1:
+    with step_col1:
         st.markdown("""
         <div class="demo-card">
-            <h3>📤 1. Upload & Generate</h3>
-            <p>Upload any document and watch AI instantly create structured flashcards</p>
+            <div style="text-align: center; font-size: 3rem; margin-bottom: 1rem;">📤</div>
+            <h3 style="text-align: center;">1. Upload</h3>
+            <p style="text-align: center;">Upload your Word document with study material</p>
         </div>
         """, unsafe_allow_html=True)
     
-    with demo_col2:
+    with step_col2:
         st.markdown("""
         <div class="demo-card">
-            <h3>🔍 2. Review & Detect</h3>
-            <p>AI checks for duplicates and helps you maintain a clean knowledge base</p>
+            <div style="text-align: center; font-size: 3rem; margin-bottom: 1rem;">🤖</div>
+            <h3 style="text-align: center;">2. Generate</h3>
+            <p style="text-align: center;">AI instantly creates smart flashcards</p>
         </div>
         """, unsafe_allow_html=True)
     
-    with demo_col3:
+    with step_col3:
         st.markdown("""
         <div class="demo-card">
-            <h3>📚 3. Learn & Analyze</h3>
-            <p>Search instantly and discover patterns with smart analytics</p>
+            <div style="text-align: center; font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+            <h3 style="text-align: center;">3. Learn</h3>
+            <p style="text-align: center;">Review, search, and master your knowledge</p>
         </div>
         """, unsafe_allow_html=True)
     
     st.markdown("---")
-
     
-    # Call to Action Section - More Prominent
+    # Call to Action Section
     st.markdown("## 🚀 Ready to Transform Your Learning?")
     
     st.markdown("""
     <div style='text-align: center; padding: 2rem;'>
         <h3 style='color: #6c757d; margin-bottom: 2rem;'>
-        Join students, professionals, and lifelong learners who are already learning smarter
+        Stop forgetting what you learn. Start building knowledge that lasts.
         </h3>
     </div>
     """, unsafe_allow_html=True)
@@ -143,14 +188,11 @@ def main():
             if st.button("🔍 **Explore Features**", use_container_width=True):
                 st.switch_page("pages/2_🔍_Search_Flashcards.py")
 
-    # Add this to your Home.py after the main features section
-
+    # Technical Flowchart
     st.markdown("---")
+    st.markdown("## 🔧 Behind the Scenes")
 
-    # Simple Technical Flowchart
-    st.markdown("## 🔧 How It Works")
-
-    # Create the flowchart using Streamlit components instead of raw HTML
+    # Create the flowchart
     col1, arrow1, col2, arrow2, col3, arrow3, col4 = st.columns([1, 0.2, 1, 0.2, 1, 0.2, 1])
 
     with col1:
